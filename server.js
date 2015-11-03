@@ -33,9 +33,10 @@ function executeCommand(username, command) {
     try {
         var args = (!username ? config.minecraft.execArgsNoUser : config.minecraft.execArgs)
             .map(function(txt) {
-                return txt.replace('{username}', username)
-                    .replace('{command}', command)
-                    .replace(/'/g, '\\\'');
+                txt = txt.replace('{username}', username)
+                    .replace('{command}', command.replace(/['"]/g, ''))
+                    ;
+                return txt;
             });
 
         console.log('> ' + execFile + ' ' + args.join(' '));
