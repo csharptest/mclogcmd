@@ -49,19 +49,19 @@ function executeCommand(username, command) {
             },
             function (err, stdOut, stdErr) {
                 if (err) {
-                    console.error(err.message);
+                    console.log(err.message);
                 }
                 if (stdErr.length) {
-                    //console.error('! ' + stdErr.toString());
+                    console.log('! ' + stdErr.toString());
                 }
 
                 if (stdOut.length) {
-                    //console.log('< ' + stdOut.toString());
+                    console.log('< ' + stdOut.toString());
                 }
             });
     }
     catch(ex) {
-        console.error('ERR: ' + ex.message);
+        console.log('ERR: ' + ex.message);
     }
 }
 
@@ -71,7 +71,7 @@ function parseLogFile() {
     try {
         content = fs.readFileSync(config.minecraft.log);
     } catch(ex) {
-        console.error(ex.message);
+        console.log(ex.message);
         return;
     }
 
