@@ -1,2 +1,4 @@
 *.orig
 node_modules
+.idea
+

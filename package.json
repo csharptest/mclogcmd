@@ -1,0 +1,44 @@
+{
+  "name": "mclogcmd",
+  "version": "0.0.0-alpha",
+  "description": "'Allow commands from users via log messages'",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:csharptest/mclogcmd.git"
+  },
+  "keywords": [
+    "MC",
+    "Minecraft",
+    "Logs",
+    "Commands"
+  ],
+  "author": "RKnapp",
+  "license": "MIT",
+  "homepage": "https://github.com/csharptest/mclogcmd/blob/master/README.md",
+  "dependencies": {
+    "fs.notify": "0.0.4"
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true
+    },
+    "rules": {
+      "no-console": [
+        0
+      ],
+      "no-underscore-dangle": [
+        0
+      ],
+      "quotes": [
+        2,
+        "single"
+      ]
+    },
+    "globals": {}
+  }
+}
