@@ -102,7 +102,8 @@ function parseLogFile() {
 
         match = line.match(config.minecraft.badCommand);
         if (match) {
-            executeCommand(null, '/tell ' + match[2] + ' ' + match[1]);
+            var tell = '/tell ' + match[2] + ' ' + match[1].replace(/["']+/g, '');
+            timers.setTimeout(executeCommand.apply(null, [null, tell]), 100);
             continue;
         }
     }
