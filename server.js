@@ -89,6 +89,10 @@ function parseLogFile() {
             if (allowCommand(match[1], match[2])) {
                 executeCommand(match[1], match[2]);
             }
+            else if (match[2].match(/^\/help/i)) {
+                executeCommand(null, '/tell ' + match[1] + ' Available commands: ' +
+                    Object.keys(config.commands).join(', '));
+            }
             else {
                 executeCommand(null, '/tell ' + match[1] + ' Invalid command: ' + match[2]);
             }
