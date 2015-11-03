@@ -33,10 +33,8 @@ function executeCommand(username, command) {
     try {
         var args = (!username ? config.minecraft.execArgsNoUser : config.minecraft.execArgs)
             .map(function(txt) {
-                txt = txt.replace('{username}', username)
-                    .replace('{command}', command.replace(/['"]/g, ''))
-                    ;
-                return txt;
+                return txt.replace('{username}', username)
+                    .replace('{command}', command);
             });
 
         console.log('> ' + execFile + ' ' + args.join(' '));
@@ -99,7 +97,7 @@ function parseLogFile() {
 
         match = line.match(config.minecraft.badCommand);
         if (match) {
-            var tell = '/tell ' + match[2] + ' ' + match[1];
+            var tell = '/tell ' + match[2] + ' ' + match[1].replace(/["']+/g, '');
             timers.setTimeout(executeCommand.apply(null, [null, tell]), 100);
             continue;
         }
