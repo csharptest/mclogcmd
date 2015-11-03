@@ -4,8 +4,8 @@ module.exports = {
         cwd: '.',
         timeout: 10000,
         execFile: '/usr/local/bin/msm',
-        execArgs: 'survival cmd execute @p[name={username},x=-2000,y=64,z=-250,r=2000] ~ ~ ~ {command}',
-        execArgsNoUser: 'survival cmd {command}',
+        execArgs: ['survival', 'cmd', 'execute @p[name={username},x=-2000,y=64,z=-250,r=2000] ~ ~ ~ {command}'],
+        execArgsNoUser: ['survival', 'cmd', '{command}'],
 
         logFormat: /^\[\d\d:\d\d:\d\d] \[Server thread\/INFO]: <(\w+)> #(\/.*)\s*$/i,
         badCommand: /^\[\d\d:\d\d:\d\d] \[Server thread\/INFO]: (Failed to execute '.*') as (\w+)\s*$/i

@@ -29,20 +29,15 @@ function allowCommand(username, command) {
     return result;
 }
 
-function splitArguments(text) {
-    return text.split(' ');
-}
-
 function executeCommand(username, command) {
     try {
-        var cmd = !username ? config.minecraft.execArgsNoUser : config.minecraft.execArgs;
-        cmd = cmd
-            .replace('{username}', username)
-            .replace('{command}', command);
+        var args = (!username ? config.minecraft.execArgsNoUser : config.minecraft.execArgs)
+            .map(function(txt) {
+                return txt.replace('{username}', username)
+                    .replace('{command}', command);
+            });
 
-        var args = splitArguments(cmd);
-
-        console.log('> ' + execFile + ' ' + cmd);
+        console.log('> ' + execFile + ' ' + args.join(' '));
         childProcess.execFile(execFile, args, {
                 cwd: Path.resolve(config.minecraft.cwd),
                 timeout: config.minecraft.timeout
@@ -102,7 +97,7 @@ function parseLogFile() {
 
         match = line.match(config.minecraft.badCommand);
         if (match) {
-            var tell = '/tell ' + match[2] + ' ' + match[1].replace(/["']+/g, '');
+            var tell = '/tell ' + match[2] + ' ' + match[1];
             timers.setTimeout(executeCommand.apply(null, [null, tell]), 100);
             continue;
         }
