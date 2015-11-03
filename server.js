@@ -15,17 +15,18 @@ var execFile = Path.resolve(config.minecraft.execFile);
 var parseState = {};
 
 function allowCommand(username, command) {
-    for (var ix = 0; ix < config.commands.length; ix++) {
-        if (!config.commands[ix].match) {
-            continue;
+    var result = false;
+    Object.keys(config.commands).forEach(
+        function(k) {
+        var cmd = config.commands[k];
+        if (cmd.match) {
+            var m = command.match(cmd.match);
+            if (m) {
+                result = true;
+            }
         }
-
-        var m = command.match(config.commands[ix].match);
-        if (m) {
-            return true;
-        }
-    }
-    return false;
+    });
+    return result;
 }
 
 function splitArguments(text) {
@@ -34,7 +35,8 @@ function splitArguments(text) {
 
 function executeCommand(username, command) {
     try {
-        var cmd = config.minecraft.execArgs
+        var cmd = !username ? config.minecraft.execArgsNoUser : config.minecraft.execArgs;
+        cmd = cmd
             .replace('{username}', username)
             .replace('{command}', command);
 
@@ -85,15 +87,23 @@ function parseLogFile() {
     }
 
     for (parseState.lines; parseState.lines < lines.length; parseState.lines++) {
-        var match = lines[parseState.lines].match(config.minecraft.logFormat);
+        var line = lines[parseState.lines].replace('\r', '');
+        var match = line.match(config.minecraft.logFormat);
         if(match) {
             //console.log(JSON.stringify(match));
             if (allowCommand(match[1], match[2])) {
                 executeCommand(match[1], match[2]);
             }
             else {
-                console.error('Invalid command: <%s> %s', match[1], match[2]);
+                executeCommand(null, '/tell ' + match[1] + ' Invalid command: ' + match[2]);
             }
+            continue;
+        }
+
+        match = line.match(config.minecraft.badCommand);
+        if (match) {
+            executeCommand(null, '/tell ' + match[2] + ' ' + match[1]);
+            continue;
         }
     }
 

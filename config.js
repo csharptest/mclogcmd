@@ -5,16 +5,18 @@ module.exports = {
         timeout: 10000,
         execFile: '/usr/local/bin/msm',
         execArgs: 'survival cmd execute @p[name={username},x=-2000,y=64,z=-250,r=2000] ~ ~ ~ {command}',
-        logFormat: /^\[\d\d:\d\d:\d\d] \[Server thread\/INFO]: <(\w+)> #(\/.*)/i
+        execArgsNoUser: 'survival cmd {command}',
+
+        logFormat: /^\[\d\d:\d\d:\d\d] \[Server thread\/INFO]: <(\w+)> #(\/.*)\s*$/i,
+        badCommand: /^\[\d\d:\d\d:\d\d] \[Server thread\/INFO]: (Failed to execute '.*') as (\w+)\s*$/i
     },
-    commands: [
-        { match: /^\/tp @p ~|\d/i },
-        { match: /^\/fill /i },
-        { match: /^\/clone /i },
-        { match: /^\/blockdata /i },
-        { match: /^\/setblock /i },
-        { match: /^\/summon /i },
-        { match: /^\/weather /i },
-        { match: /^\/me /i }
-    ]
+    commands: {
+        tp: { match: /^\/tp @p ~|\d/i },
+        fill: { match: /^\/fill /i },
+        clone: { match: /^\/clone /i },
+        blockdata: { match: /^\/blockdata /i },
+        setblock: { match: /^\/setblock /i },
+        summon: { match: /^\/summon /i },
+        weather: { match: /^\/weather /i }
+    }
 };
