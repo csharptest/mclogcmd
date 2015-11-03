@@ -35,7 +35,7 @@ function executeCommand(username, command) {
             .map(function(txt) {
                 return txt.replace('{username}', username)
                     .replace('{command}', command)
-                    .replace('\'', '\\\'');
+                    .replace(/'/g, '\\\'');
             });
 
         console.log('> ' + execFile + ' ' + args.join(' '));
