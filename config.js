@@ -117,7 +117,7 @@ var config = {
                 try { player = playerInfo(data.username); }
                 catch(ex) { return fail(ex.message); }
                 if (fs.existsSync(player.bak)) {
-                    return fail('You are already in creative.');
+                    return fail('You are already in adventure/creative mode.');
                 }
 
                 msm(['survival', 'save', 'all'], function (err) {
@@ -131,6 +131,39 @@ var config = {
                         }
 
                         mcrun('/tp @p 143 60 5083');
+                        complete();
+                    });
+                });
+            }
+        },
+        'gamemode adventure': {
+            match: /^\/gamemode\s+a(dventure)?$/i,
+            file: 'gamemode',
+            action: function(mcrun, data, complete) {
+                mcrun('/tell ' + data.username + ' going to adventure!');
+                var fail = function(message) {
+                    mcrun('/tell ' + data.username + ' ' + (message || 'Something went wrong.'));
+                    return complete();
+                };
+
+                var player;
+                try { player = playerInfo(data.username); }
+                catch(ex) { return fail(ex.message); }
+                if (fs.existsSync(player.bak)) {
+                    return fail('You are already in adventure/creative mode.');
+                }
+
+                msm(['survival', 'save', 'all'], function (err) {
+                    if (err) {
+                        //return fail('Unable to save the world.');
+                    }
+
+                    copyFile(player.dat, player.bak, function (ecopy) {
+                        if (ecopy) {
+                            return fail('Unable to create backup.');
+                        }
+
+                        mcrun('/tp @p 129 60 5083');
                         complete();
                     });
                 });
