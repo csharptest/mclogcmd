@@ -6,41 +6,68 @@ var childProcess = require('child_process');
 var fs = require('fs');
 var Path = require('path');
 var timers = require('timers');
+var extend = require('util')._extend;
+var config = require('./config');
 
-var root = Path.resolve(__dirname);
 var timerPending = false;
-var config = require(Path.join(root, 'config'));
-var execFile = Path.resolve(config.minecraft.execFile);
-
 var parseState = {};
 
-function allowCommand(username, command) {
-    var result = false;
-    Object.keys(config.commands).forEach(
-        function(k) {
-        var cmd = config.commands[k];
+var running = {};
+var pending = {};
+
+function findCommand(values) {
+    var keys = Object.keys(config.commands);
+    for (var ix = 0; ix < keys.length; ix++) {
+        var cmd = config.commands[keys[ix]];
         if (cmd.match) {
-            var m = command.match(cmd.match);
+            var m = values.command.match(cmd.match);
             if (m) {
-                result = true;
+                cmd = extend({
+                    name: keys[ix],
+                    cwd: Path.resolve(cmd.cwd || __dirname),
+                    timeout: config.minecraft.timeout || 10000
+                }, cmd);
+                if (!cmd.hasOwnProperty('file')) {
+                    cmd = extend(cmd, config.mcexec);
+                }
+                return cmd;
             }
         }
-    });
-    return result;
+    }
+    return null;
 }
 
-function executeCommand(username, command) {
-    try {
-        var args = (!username ? config.minecraft.execArgsNoUser : config.minecraft.execArgs)
-            .map(function(txt) {
-                return txt.replace('{username}', username)
-                    .replace('{command}', command);
-            });
+function replaceValues(txt, values) {
+    var keys = Object.keys(values);
+    for (var ix = 0; ix < keys.length; ix++) {
+        txt = txt.replace('{' + keys[ix] + '}', values[keys[ix]]);
+    }
+    return txt;
+}
 
-        console.log('> ' + execFile + ' ' + args.join(' '));
-        childProcess.execFile(execFile, args, {
-                cwd: Path.resolve(config.minecraft.cwd),
-                timeout: config.minecraft.timeout
+function executeCommand(cmd, values) {
+
+    if (running[cmd.file]) {
+        pending[cmd.file] = (pending[cmd.file] || []).concat([{command: cmd, values: values}]);
+        return;
+    }
+    running[cmd.file] = true;
+    var finished = function() {
+        running[cmd.file] = false;
+        if (pending[cmd.file] && pending[cmd.file].length > 0) {
+            var next = pending[cmd.file][0];
+            pending[cmd.file] = pending[cmd.file].splice(1);
+            timers.setTimeout(function() { executeCommand(next.command, next.values); }, 10);
+        }
+    };
+
+    try {
+        var args = (cmd.args || []).map(function(arg) { return replaceValues(arg, values); });
+
+        console.log('> ' + cmd.file + ' ' + args.join(' '));
+        childProcess.execFile(cmd.file, args, {
+                cwd: Path.resolve(cmd.cwd || __dirname),
+                timeout: config.minecraft.timeout || 10000
             },
             function (err, stdOut, stdErr) {
                 if (err) {
@@ -49,15 +76,53 @@ function executeCommand(username, command) {
                 if (stdErr.length) {
                     console.log('! ' + stdErr.toString());
                 }
-
                 if (stdOut.length) {
                     console.log('< ' + stdOut.toString());
                 }
+
+                finished();
             });
     }
     catch(ex) {
         console.log('ERR: ' + ex.message);
+        finished();
     }
+}
+
+function parseLogLine(line) {
+    if (!line) {
+        return null;
+    }
+    var match = line.match(config.minecraft.logFormat);
+    if(match) {
+        var values = {
+            username: match[1],
+            command: match[2]
+        };
+        var cmd = findCommand(values);
+        if (cmd) {
+            return executeCommand(cmd, values);
+        }
+        else if (values.command.match(/^\/help/i)) {
+            return executeCommand(config.mctell, {
+                username: values.username,
+                command: 'Available commands: ' + Object.keys(config.commands).join(', ')
+            });
+        }
+        else {
+            return executeCommand(config.mctell, values);
+        }
+    }
+
+    match = line.match(config.minecraft.badCommand);
+    if (match) {
+        values = {
+            username: match[2],
+            command: match[1].replace(/["']+/g, '')
+        };
+        return executeCommand(config.mctell, values);
+    }
+    return null;
 }
 
 function parseLogFile() {
@@ -83,31 +148,14 @@ function parseLogFile() {
 
     for (parseState.lines; parseState.lines < lines.length; parseState.lines++) {
         var line = lines[parseState.lines].replace('\r', '');
-        var match = line.match(config.minecraft.logFormat);
-        if(match) {
-            //console.log(JSON.stringify(match));
-            if (allowCommand(match[1], match[2])) {
-                executeCommand(match[1], match[2]);
-            }
-            else if (match[2].match(/^\/help/i)) {
-                executeCommand(null, '/tell ' + match[1] + ' Available commands: ' +
-                    Object.keys(config.commands).join(', '));
-            }
-            else {
-                executeCommand(null, '/tell ' + match[1] + ' Invalid command: ' + match[2]);
-            }
-            continue;
+        try {
+            parseLogLine(line);
         }
-
-        match = line.match(config.minecraft.badCommand);
-        if (match) {
-            var tell = '/tell ' + match[2] + ' ' + match[1].replace(/["']+/g, '');
-            timers.setTimeout(executeCommand.apply(null, [null, tell]), 100);
-            continue;
+        catch (ex) {
+            console.log('ERR: ' + ex.toString());
         }
     }
-
-    console.log(JSON.stringify(parseState));
+    //console.log(JSON.stringify(parseState));
 }
 
 parseLogFile();
