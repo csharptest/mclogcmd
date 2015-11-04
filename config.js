@@ -157,8 +157,8 @@ var config = {
                     return fail('You are already in survival.');
                 }
 
-                msm(['survival', 'bl', 'player', 'add', data.username], function () {
-                    msm(['survival', 'kick', data.username], function () {
+                msm(['survival', 'kick', data.username], function () {
+                    msm(['survival', 'bl', 'player', 'add', data.username], function () {
                         msm(['survival', 'save', 'all'], function () {
                             copyFile(player.bak, player.dat, function (ecopy) {
                                 if (!ecopy) {
