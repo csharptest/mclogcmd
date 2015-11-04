@@ -83,9 +83,9 @@ function executeCommand(cmd, values, completed) {
         if (cmd.action) {
             cmd.action(
                 function rawMcCommand(cmdText, callback) {
-                    var cmd = extend({}, config.mcexec);
-                    cmd.args = cmd.args.concat([cmdText]);
-                    executeCommand(cmd, {username: values.username, command: ''}, callback);
+                    var scmd = extend({}, config.mcexec);
+                    scmd.args = scmd.args.concat([cmdText]);
+                    executeCommand(scmd, {username: values.username, command: ''}, callback);
                 },
                 extend({}, values),
                 finished
