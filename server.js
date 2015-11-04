@@ -22,15 +22,7 @@ function findCommand(values) {
         if (cmd.match) {
             var m = values.command.match(cmd.match);
             if (m) {
-                cmd = extend({
-                    name: keys[ix],
-                    cwd: Path.resolve(cmd.cwd || __dirname),
-                    timeout: config.minecraft.timeout || 10000
-                }, cmd);
-                if (!cmd.hasOwnProperty('file')) {
-                    cmd = extend(cmd, config.mcexec);
-                }
-                return cmd;
+                return extend({ name: keys[ix] }, cmd);
             }
         }
     }
@@ -45,7 +37,16 @@ function replaceValues(txt, values) {
     return txt;
 }
 
-function executeCommand(cmd, values) {
+function executeCommand(cmd, values, completed) {
+
+    cmd = extend({
+        cwd: Path.resolve(cmd.cwd || __dirname),
+        timeout: config.minecraft.timeout || 10000
+    }, cmd);
+    if (!cmd.hasOwnProperty('file')) {
+        cmd.file = config.mcexec.file;
+        cmd.args = config.mcexec.args.concat(cmd.args || config.mcrunas.args);
+    }
 
     if (running[cmd.file]) {
         pending[cmd.file] = (pending[cmd.file] || []).concat([{command: cmd, values: values}]);
@@ -54,9 +55,16 @@ function executeCommand(cmd, values) {
     running[cmd.file] = true;
     var finished = function() {
         running[cmd.file] = false;
-        if (cmd.complete) {
-            timers.setTimeout(function() { executeCommand(config.mctell, {username: values.username, command: cmd.complete}); }, 1);
+        try {
+            if (cmd.complete) {
+                timers.setTimeout(function() { executeCommand(config.mctell, {username: values.username, command: cmd.complete}); }, 1);
+            }
+            if (completed) {
+                completed();
+            }
         }
+        catch(ex) { console.error(ex); }
+
         if (pending[cmd.file] && pending[cmd.file].length > 0) {
             var next = pending[cmd.file][0];
             pending[cmd.file] = pending[cmd.file].splice(1);
@@ -71,23 +79,37 @@ function executeCommand(cmd, values) {
         if (cmd.file !== config.mcexec.file && cmd.started) {
             timers.setTimeout(function() { executeCommand(config.mctell, {username: values.username, command: cmd.started}); }, 1);
         }
-        childProcess.execFile(cmd.file, args, {
-                cwd: Path.resolve(cmd.cwd || __dirname),
-                timeout: config.minecraft.timeout || 10000
-            },
-            function (err, stdOut, stdErr) {
-                if (err) {
-                    console.log(err.message);
-                }
-                if (stdErr.length) {
-                    console.log('! ' + stdErr.toString());
-                }
-                if (stdOut.length) {
-                    console.log('< ' + stdOut.toString());
-                }
 
-                finished();
-            });
+        if (cmd.action) {
+            cmd.action(
+                function rawMcCommand(cmdText, callback) {
+                    var cmd = extend({}, config.mcexec);
+                    cmd.args = cmd.args.concat([cmdText]);
+                    executeCommand(cmd, {username: values.username, command: ''}, callback);
+                },
+                extend({}, values),
+                finished
+            );
+        }
+        else {
+            childProcess.execFile(cmd.file, args, {
+                    cwd: Path.resolve(cmd.cwd || __dirname),
+                    timeout: config.minecraft.timeout || 10000
+                },
+                function (err, stdOut, stdErr) {
+                    if (err) {
+                        console.log(err.message);
+                    }
+                    if (stdErr.length) {
+                        console.log('! ' + stdErr.toString());
+                    }
+                    if (stdOut.length) {
+                        console.log('< ' + stdOut.toString());
+                    }
+
+                    finished();
+                });
+        }
     }
     catch(ex) {
         console.log('ERR: ' + ex.message);
@@ -116,6 +138,7 @@ function parseLogLine(line) {
             });
         }
         else {
+            values.command = 'Unknown command: ' + values.command;
             return executeCommand(config.mctell, values);
         }
     }
