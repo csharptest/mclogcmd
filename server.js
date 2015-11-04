@@ -54,6 +54,9 @@ function executeCommand(cmd, values) {
     running[cmd.file] = true;
     var finished = function() {
         running[cmd.file] = false;
+        if (cmd.complete) {
+            timers.setTimeout(function() { executeCommand(config.mctell, {username: values.username, command: cmd.complete}); }, 1);
+        }
         if (pending[cmd.file] && pending[cmd.file].length > 0) {
             var next = pending[cmd.file][0];
             pending[cmd.file] = pending[cmd.file].splice(1);
@@ -65,6 +68,9 @@ function executeCommand(cmd, values) {
         var args = (cmd.args || []).map(function(arg) { return replaceValues(arg, values); });
 
         console.log('> ' + cmd.file + ' ' + args.join(' '));
+        if (cmd.file !== config.mcexec.file && cmd.started) {
+            timers.setTimeout(function() { executeCommand(config.mctell, {username: values.username, command: cmd.started}); }, 1);
+        }
         childProcess.execFile(cmd.file, args, {
                 cwd: Path.resolve(cmd.cwd || __dirname),
                 timeout: config.minecraft.timeout || 10000

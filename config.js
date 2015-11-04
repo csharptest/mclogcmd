@@ -24,7 +24,9 @@ module.exports = {
         weather: { match: /^\/weather /i },
         'map-update': {
             match: /^\/map-update/i,
-            file: '/opt/msm/scripts/update.sh'
+            file: '/opt/msm/scripts/update.sh',
+            started: 'Started updating the map.',
+            complete: 'Finished updating the map.'
         }
     }
 };
