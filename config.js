@@ -130,7 +130,7 @@ var config = {
                             return fail('Unable to create backup.');
                         }
 
-                        mcrun('/tp @p 143 60 5083');
+                        mcrun('/tp ' + data.username + ' 143 60 5083');
                         complete();
                     });
                 });
@@ -163,7 +163,7 @@ var config = {
                             return fail('Unable to create backup.');
                         }
 
-                        mcrun('/tp @p 129 60 5083');
+                        mcrun('/tp ' + data.username + ' 129 60 5083');
                         complete();
                     });
                 });
