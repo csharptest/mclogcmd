@@ -1,0 +1,17 @@
+/setblock ~1 ~ ~ stone_stairs
+/fill ~2 ~ ~-1 ~6 ~ ~2 cobblestone
+/fill ~3 ~ ~ ~5 ~ ~1 dirt
+/fill ~2 ~1 ~-1 ~6 ~3 ~2 planks
+/fill ~2 ~4 ~ ~6 ~4 ~1 log
+/fill ~3 ~4 ~-1 ~5 ~4 ~2 log
+/fill ~3 ~5 ~ ~5 ~5 ~1 log
+/fill ~3 ~1 ~ ~5 ~4 ~1 air
+/fill ~2 ~1 ~-1 ~2 ~3 ~-1 log
+/fill ~2 ~1 ~2 ~2 ~3 ~2 log
+/fill ~6 ~1 ~-1 ~6 ~3 ~-1 log
+/fill ~6 ~1 ~2 ~6 ~3 ~2 log
+/fill ~2 ~1 ~ ~2 ~2 ~ air
+/setblock ~2 ~1 ~ wooden_door
+/setblock ~2 ~2 ~ wooden_door 8
+/setblock ~4 ~2 ~-1 glass_pane
+/setblock ~4 ~2 ~2 glass_pane
