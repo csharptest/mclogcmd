@@ -1,0 +1,11 @@
+/fill ~1 ~ ~-6 ~9 ~1 ~6 air
+/fill ~1 ~ ~-6 ~9 ~ ~6 log
+/fill ~2 ~ ~-5 ~8 ~ ~5 farmland 7
+/fill ~2 ~ ~ ~8 ~ ~ log
+/fill ~2 ~ ~-3 ~8 ~ ~-3 water
+/fill ~2 ~ ~3 ~8 ~ ~3 water
+/fill ~2 ~1 ~-5 ~8 ~1 ~-4 wheat
+/fill ~2 ~1 ~5 ~8 ~1 ~4 wheat
+/fill ~2 ~1 ~-2 ~8 ~1 ~-1 carrots
+/fill ~2 ~1 ~1 ~8 ~1 ~2 potatoes
+

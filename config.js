@@ -135,6 +135,8 @@ var config = {
                         mcrun('/execute ' + data.username + ' ~ ~ ~ ' + file[ix], function() {
                             runToEnd(ix + 1);
                         });
+                    } else if (ix < file.length) {
+                        runToEnd(ix + 1);
                     } else {
                         complete();
                     }
