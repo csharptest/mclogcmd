@@ -11,11 +11,11 @@
 /fill ~3 ~4 ~-1 ~5 ~4 ~1 planks
 /fill ~2 ~5 ~-2 ~6 ~5 ~2 fence
 /fill ~3 ~5 ~-1 ~5 ~5 ~1 air
-/fill ~2 ~1 ~ ~2 ~2 ~ air
-/setblock ~2 ~1 ~ wooden_door
-/setblock ~2 ~2 ~ wooden_door 8
 /fill ~5 ~1 ~1 ~5 ~4 ~1 ladder 4
 /setblock ~6 ~2 ~ glass_pane
 /setblock ~4 ~2 ~-2 glass_pane
 /setblock ~4 ~2 ~2 glass_pane
 /setblock ~3 ~3 ~ torch 1
+
+/setblock ~2 ~1 ~ wooden_door
+/setblock ~2 ~2 ~ wooden_door 8

@@ -10,9 +10,9 @@
 /fill ~2 ~1 ~2 ~2 ~3 ~2 log
 /fill ~6 ~1 ~-1 ~6 ~3 ~-1 log
 /fill ~6 ~1 ~2 ~6 ~3 ~2 log
-/fill ~2 ~1 ~ ~2 ~2 ~ air
-/setblock ~2 ~1 ~ wooden_door
-/setblock ~2 ~2 ~ wooden_door 8
 /setblock ~4 ~2 ~-1 glass_pane
 /setblock ~4 ~2 ~2 glass_pane
 /setblock ~3 ~3 ~ torch 1
+
+/setblock ~2 ~1 ~ wooden_door
+/setblock ~2 ~2 ~ wooden_door 8
