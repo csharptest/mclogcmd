@@ -1,4 +1,8 @@
-#library
+# library
+# minecraft command_block script to build village building from:
+# http://minecraft.gamepedia.com/Minecraft_Wiki:Projects/Village_Blueprints/Library
+# use /execute @p[selector] ~ ~ ~ to execute the following relative to a player
+
 /fill ~1 ~ ~-7 ~8 ~8 ~1 air
 /setblock ~1 ~ ~ stone_stairs 0
 /fill ~2 ~ ~-7 ~7 ~6 ~1 cobblestone

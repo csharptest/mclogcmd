@@ -1,4 +1,8 @@
-#large house
+# large house
+# minecraft command_block script to build village building from:
+# http://minecraft.gamepedia.com/Minecraft_Wiki:Projects/Village_Blueprints/Large_House
+# use /execute @p[selector] ~ ~ ~ to execute the following relative to a player
+
 /fill ~1 ~ ~-6 ~12 ~6 ~2 air
 /setblock ~1 ~ ~ stone_stairs 0
 /fill ~2 ~ ~-6 ~12 ~3 ~2 cobblestone

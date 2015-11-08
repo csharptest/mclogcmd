@@ -1,4 +1,8 @@
-#butcher
+# butcher shop
+# minecraft command_block script to build village building from:
+# http://minecraft.gamepedia.com/Minecraft_Wiki:Projects/Village_Blueprints/Butcher_Shop
+# use /execute @p[selector] ~ ~ ~ to execute the following relative to a player
+
 /fill ~1 ~ ~-2 ~12 ~7 ~6 air
 /setblock ~1 ~ ~ stone_stairs 0
 /fill ~2 ~ ~-2 ~7 ~3 ~6 cobblestone

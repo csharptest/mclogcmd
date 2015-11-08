@@ -1,3 +1,8 @@
+# farm shack - v3
+# minecraft command_block script to build village building from:
+# http://minecraft.gamepedia.com/Minecraft_Wiki:Projects/Village_Blueprints/Farm_Shack#V3
+# use /execute @p[selector] ~ ~ ~ to execute the following relative to a player
+
 /fill ~1 ~ ~-1 ~6 ~5 ~2 air
 /setblock ~1 ~ ~ stone_stairs
 /fill ~2 ~ ~-1 ~6 ~ ~2 cobblestone

@@ -1,4 +1,8 @@
-#blacksmith
+# blacksmith
+# minecraft command_block script to build village building from:
+# http://minecraft.gamepedia.com/Minecraft_Wiki:Projects/Village_Blueprints/Blacksmith
+# use /execute @p[selector] ~ ~ ~ to execute the following relative to a player
+
 /fill ~1 ~ ~-2 ~8 ~5 ~7 air
 /fill ~1 ~ ~-1 ~1 ~ ~1 stone_stairs 0
 /fill ~2 ~ ~-2 ~8 ~ ~7 cobblestone

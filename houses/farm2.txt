@@ -1,3 +1,8 @@
+# farm - v2
+# minecraft command_block script to build village building from:
+# http://minecraft.gamepedia.com/Minecraft_Wiki:Projects/Village_Blueprints/Farm#V2
+# use /execute @p[selector] ~ ~ ~ to execute the following relative to a player
+
 /fill ~1 ~ ~-6 ~9 ~1 ~6 air
 /fill ~1 ~ ~-6 ~9 ~ ~6 log
 /fill ~2 ~ ~-5 ~8 ~ ~5 farmland 7

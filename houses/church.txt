@@ -1,4 +1,9 @@
-#church - first floor
+# church
+# minecraft command_block script to build village building from:
+# http://minecraft.gamepedia.com/Minecraft_Wiki:Projects/Village_Blueprints/Church
+# use /execute @p[selector] ~ ~ ~ to execute the following relative to a player
+
+#first floor
 /fill ~1 ~ ~-2 ~10 ~12 ~2 air
 /setblock ~1 ~ ~ stone_stairs 0
 /fill ~2 ~ ~-1 ~10 ~4 ~1 cobblestone
@@ -22,7 +27,7 @@
 /setblock ~8 ~4 ~1 torch 4
 /setblock ~7 ~4 ~ torch 1
 
-#church - tower room
+#tower room
 /setblock ~2 ~4 ~-2 cobblestone
 /setblock ~2 ~4 ~2 cobblestone
 /fill ~2 ~5 ~-1 ~6 ~10 ~1 cobblestone
@@ -37,6 +42,6 @@
 /setblock ~4 ~11 ~-2 cobblestone
 /setblock ~4 ~11 ~2 cobblestone
 
-#door last so we know it's done
+#door last
 /setblock ~2 ~1 ~ wooden_door
 /setblock ~2 ~2 ~ wooden_door 8
