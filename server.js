@@ -49,7 +49,7 @@ function executeCommand(cmd, values, completed) {
     }
 
     if (running[cmd.file]) {
-        pending[cmd.file] = (pending[cmd.file] || []).concat([{command: cmd, values: values}]);
+        pending[cmd.file] = (pending[cmd.file] || []).concat([{command: cmd, values: values, cb: completed}]);
         return;
     }
     running[cmd.file] = true;
@@ -68,7 +68,7 @@ function executeCommand(cmd, values, completed) {
         if (pending[cmd.file] && pending[cmd.file].length > 0) {
             var next = pending[cmd.file][0];
             pending[cmd.file] = pending[cmd.file].splice(1);
-            timers.setTimeout(function() { executeCommand(next.command, next.values); }, 10);
+            timers.setTimeout(function() { executeCommand(next.command, next.values, next.cb); }, 10);
         }
     };
 

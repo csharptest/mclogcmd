@@ -2,32 +2,30 @@
 var childProcess = require('child_process');
 var fs = require('fs');
 var Path = require('path');
-var timers = require('timers');
-var extend = require('util')._extend;
 
 function copyFile(source, target, cb) {
     var cbCalled = false;
 
     console.log('Copy file %s to %s', source, target);
-    var rd = fs.createReadStream(source);
-    rd.on("error", function(err) {
-        done(err);
-    });
-    var wr = fs.createWriteStream(target);
-    wr.on("error", function(err) {
-        done(err);
-    });
-    wr.on("close", function(ex) {
-        done();
-    });
-    rd.pipe(wr);
-
     function done(err) {
         if (!cbCalled) {
             cb(err);
             cbCalled = true;
         }
     }
+    var rd = fs.createReadStream(source);
+    rd.on('error', function(err) {
+        done(err);
+    });
+    var wr = fs.createWriteStream(target);
+    wr.on('error', function(err) {
+        done(err);
+    });
+    wr.on('close', function(/*e?*/) {
+        done();
+    });
+    rd.pipe(wr);
+
 }
 
 function msm(args, callback) {
@@ -90,7 +88,7 @@ var config = {
         args: ['/tell {username} {command}']
     },
     commands: {
-        tp: { match: /^\/tp @p ~|\d/i },
+        tp: { match: /^\/tp @p /i },
         fill: { match: /^\/fill /i },
         clone: { match: /^\/clone /i },
         blockdata: { match: /^\/blockdata /i },
@@ -102,6 +100,47 @@ var config = {
             file: '/opt/msm/scripts/update.sh',
             started: 'Started updating the map.',
             complete: 'Finished updating the map.'
+        },
+        build: {
+            match: /^\/build/i,
+            file: 'building',
+            action: function(mcrun, data, complete) {
+                var test = data.command.match(/^\/build\s+([\w_\-\.]+)/i);
+                var file = null;
+                if (test) {
+                    var pth = Path.join(__dirname, 'houses', test[1] + '.txt');
+                    if (fs.existsSync(pth)) {
+                        file = fs.readFileSync(pth);
+                    }
+                }
+                if (!file) {
+                    fs.readdir(
+                        Path.join(__dirname, 'houses'),
+                        function (err, items) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            mcrun('/tell ' + data.username + ' Available plans: ' +
+                                (items || []).map(function (p) {
+                                    return p.slice(0, -4);
+                                }).join(', '));
+                            complete();
+                        });
+                }
+
+                file = file.toString().split('\n');
+                var runToEnd = function (ix) {
+                    console.log('running step ' + ix.toString());
+                    if (ix < file.length && file[ix] && file[ix][0] === '/') {
+                        mcrun('/execute ' + data.username + ' ~ ~ ~ ' + file[ix], function() {
+                            runToEnd(ix + 1);
+                        });
+                    } else {
+                        complete();
+                    }
+                };
+                runToEnd(0);
+            }
         },
         'gamemode creative': {
             match: /^\/gamemode\s+c(reative)?$/i,

@@ -1,3 +1,4 @@
+/fill ~1 ~ ~-2 ~6 ~5 ~2 air
 /setblock ~1 ~ ~ stone_stairs
 /fill ~2 ~ ~-2 ~6 ~ ~2 cobblestone
 /fill ~2 ~1 ~-2 ~6 ~3 ~2 planks
@@ -14,7 +15,7 @@
 /setblock ~2 ~1 ~ wooden_door
 /setblock ~2 ~2 ~ wooden_door 8
 /fill ~5 ~1 ~1 ~5 ~4 ~1 ladder 4
-/setblock ~3 ~3 ~ torch 1
 /setblock ~6 ~2 ~ glass_pane
 /setblock ~4 ~2 ~-2 glass_pane
 /setblock ~4 ~2 ~2 glass_pane
+/setblock ~3 ~3 ~ torch 1

@@ -21,7 +21,8 @@
   "license": "MIT",
   "homepage": "https://github.com/csharptest/mclogcmd/blob/master/README.md",
   "dependencies": {
-    "fs.notify": "0.0.4"
+    "fs.notify": "0.0.4",
+    "sequence": "^3.0.0"
   },
   "eslintConfig": {
     "env": {

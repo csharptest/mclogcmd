@@ -1,0 +1,6 @@
+/fill ~1 ~ ~ ~1 ~2 ~ fence
+/setblock ~1 ~3 ~ wool 15
+/setblock ~ ~3 ~ torch 2
+/setblock ~1 ~3 ~-1 torch 4
+/setblock ~1 ~3 ~1 torch 3
+/setblock ~2 ~3 ~ torch 1
