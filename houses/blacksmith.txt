@@ -29,7 +29,7 @@
 /setblock ~6 ~1 ~6 oak_stairs 2
 /setblock ~6 ~1 ~5 fence
 /setblock ~6 ~2 ~5 wooden_pressure_plate
-/setblock ~7 ~1 ~2 chest 9
+/setblock ~7 ~1 ~2 chest 3
 
 #decoration
 /fill ~6 ~2 ~-2 ~7 ~2 ~ iron_bars

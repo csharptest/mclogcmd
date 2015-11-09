@@ -2,6 +2,7 @@
 var childProcess = require('child_process');
 var fs = require('fs');
 var Path = require('path');
+var BuildScript = require('./build');
 
 function copyFile(source, target, cb) {
     var cbCalled = false;
@@ -105,15 +106,15 @@ var config = {
             match: /^\/build/i,
             file: 'building',
             action: function(mcrun, data, complete) {
-                var test = data.command.match(/^\/build\s+([\w_\-\.]+)/i);
-                var file = null;
+                var test = data.command.match(/^\/build\s+([\w_\-\.]+)((\s+[\w]+)*)/i);
+                var bs = null;
                 if (test) {
-                    var pth = Path.join(__dirname, 'houses', test[1] + '.txt');
+                    var pth = Path.join(__dirname, 'houses', test[1].replace(/\.txt$/i, '') + '.txt');
                     if (fs.existsSync(pth)) {
-                        file = fs.readFileSync(pth);
+                        bs = new BuildScript(fs.readFileSync(pth).toString());
                     }
                 }
-                if (!file) {
+                if (!bs) {
                     fs.readdir(
                         Path.join(__dirname, 'houses'),
                         function (err, items) {
@@ -127,10 +128,37 @@ var config = {
                             complete();
                         });
                 }
+                if (test[2]) {
+                    var xforms = test[2].match(/\w+/gi);
+                    xforms.forEach(function(nm) {
+                        nm = nm.toLowerCase();
+                        var fn = bs.Transforms[nm];
+                        if (fn) {
+                            bs.addTransform(fn);
+                        }
+                    });
+                    if (xforms.indexOf('flip') >= 0) {
+                        bs.addTransform(bs.Transforms.flipz);
+                    }
+                    if (xforms.indexOf('east') >= 0) { /* empty */ }
+                    else if (xforms.indexOf('west') >= 0) {
+                        bs.addTransform(bs.Transforms.flipz);
+                        bs.addTransform(bs.Transforms.flipx);
+                    }
+                    else if (xforms.indexOf('north') >= 0) {
+                        bs.addTransform(bs.Transforms.swapxz);
+                        bs.addTransform(bs.Transforms.flipz);
+                    }
+                    else if (xforms.indexOf('south') >= 0) {
+                        bs.addTransform(bs.Transforms.swapxz);
+                        bs.addTransform(bs.Transforms.flipx);
+                    }
+                }
 
-                file = file.toString().split('\n');
+                var file = [];
+                bs.apply(function(txt) { file.push(txt); });
                 var runToEnd = function (ix) {
-                    console.log('running step ' + ix.toString());
+                    console.log('running step ' + ix.toString() + ': ' + file[ix]);
                     if (ix < file.length && file[ix] && file[ix][0] === '/') {
                         mcrun('/execute ' + data.username + ' ~ ~ ~ ' + file[ix], function() {
                             runToEnd(ix + 1);
@@ -142,6 +170,42 @@ var config = {
                     }
                 };
                 runToEnd(0);
+            }
+        },
+        variants: {
+            match: /^\/variants/i,
+            file: 'building',
+            action: function(mcrun, data, complete) {
+                var test = data.command.match(/^\/variants\s+([\w_\-\.]+)/i);
+                if (!test) {
+                    mcrun('/tell ' + data.username + ' please specify a block type.');
+                    return complete();
+                }
+                var block = test[1];
+                var ix, xoff, zoff;
+
+                if (block.match(/_door$/)) {
+                    for (ix = 0; ix < 4; ix++) {
+                        xoff = ix * 2 + 1;
+                        mcrun('/execute ' + data.username + ' ~ ~ ~ ' +
+                            '/setblock ~' + xoff.toString() + ' ~ ~ standing_sign 5 replace {Text1:' + block + '#' + ix.toString() + '-' + (ix + 8).toString() + '}');
+                        mcrun('/execute ' + data.username + ' ~ ~ ~ ' +
+                            '/setblock ~' + xoff.toString() + ' ~ ~1 ' + block + ' ' + ix.toString());
+                        mcrun('/execute ' + data.username + ' ~ ~ ~ ' +
+                            '/setblock ~' + xoff.toString() + ' ~1 ~1 ' + block + ' 8');
+                    }
+                }
+                else {
+                    for (ix = 0; ix < 16; ix++) {
+                        xoff = ix + 1;
+                        zoff = (ix % 2);
+                        mcrun('/execute ' + data.username + ' ~ ~ ~ ' +
+                            '/setblock ~' + xoff.toString() + ' ~ ~' + zoff.toString() + ' standing_sign 5 replace {Text1:' + block + '#' + ix.toString() + '}');
+                        mcrun('/execute ' + data.username + ' ~ ~ ~ ' +
+                            '/setblock ~' + xoff.toString() + ' ~ ~' + (zoff + 1).toString() + ' ' + block + ' ' + ix.toString());
+                    }
+                }
+                complete();
             }
         },
         'gamemode creative': {
