@@ -70,3 +70,40 @@ The file is specified in #3 above so that only 1 will execute at a time.  The pa
 * *data* - arguments in the form `{ username: 'minecraft user', command '/whatever' }`
 * *complete* - function(err) a function that should be called when the operation is completed
  
+## Creating a config.js file ##
+
+The following is a minimal example for an ubuntu host running minecraft in msm (Minecraft Server Manager):
+```
+var config = {
+    minecraft: {
+        log: '/opt/msm/servers/survival/logs/latest.log',
+        cwd: '.',
+        timeout: 10000,
+        logFormat: /^\[\d\d:\d\d:\d\d] \[Server thread\/INFO]: [<\[](\w+)[>\]] #(\/.*)\s*$/i,
+        badCommand: /^\[\d\d:\d\d:\d\d] \[Server thread\/INFO]: (Failed to execute '.*') as (\w+)\s*$/i
+    },
+    mcexec: {
+        file: '/usr/local/bin/msm',
+        args: ['survival', 'cmd']
+    },
+    mcrunas: {
+        args: ['/execute @p[name={username}] ~ ~ ~ {command}']
+    },
+    mctell: {
+        args: ['/tell {username} {command}']
+    },
+    commands: {
+        tp: { match: /^\/tp @p /i }
+    }
+};
+
+module.exports = config;
+```
+Note: Replace 'survival' above with your server name.
+
+With the above configuration, all players on the server will be able to teleport themselves using something like "`#/tp @p ~ ~10 ~`".
+
+### Caution ###
+
+With overly lax expressions like the one above it may (is) possible for someone to potentially harm the server or execute arbitrary commands.  If you (as I do) trust those whitelisted to your sever you should not have a problem; however, if you are running a public server, additional care and thought should be give to using these scripts.
+
