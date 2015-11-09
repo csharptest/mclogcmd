@@ -243,6 +243,16 @@ BuildScript.prototype.Transforms = {
     flipx: flipX,
     flipz: flipZ,
     swapxz: swapXz,
+    sink: function(cmd) {
+        if (cmd.block && cmd.block.match(/stairs$/) && cmd.pt1 && cmd.pt1.y === 0) {
+            delete cmd.command;
+            cmd.block = 'no-op';
+            return cmd;
+        }
+        if (cmd.pt1) { cmd.pt1.y -= 1; }
+        if (cmd.pt2) { cmd.pt2.y -= 1; }
+        return cmd;
+    },
     // templates are defined in oak: xformWood.bind(null, 'oak', 0),
     spruce: xFormWood.bind(null, 'spruce', 1),
     birch: xFormWood.bind(null, 'birch', 2),
@@ -261,7 +271,9 @@ BuildScript.prototype.apply = function(exec) {
     var self = this;
     self.script.forEach(function(cmd) {
         self.transforms.forEach(function(xform) {
-            cmd = xform(cmd);
+            if (cmd.command) {
+                cmd = xform(cmd);
+            }
         });
         exec(cmd.toString());
     });
